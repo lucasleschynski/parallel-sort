@@ -71,17 +71,22 @@ void generate_random_array(int list[], int length) {
 
 int main() {
     // Generate random array for sorting
-    int num_elements = 16;
+    int num_elements = 30;
     int random_array[num_elements];
     generate_random_array(random_array, num_elements);
-    for(int i = 0;i<num_elements;i++) {
-        printf("%d\n", random_array[i]);
-    }
+    auto arr_size = sizeof(random_array) / sizeof(random_array[0]);
+
+    print_array(random_array, arr_size);
 
     // int split[] = {1,3,5,7,2,4,6,8};
-    int split[] = {2,4,6,8,1,3,5,7};
-    merge(split, 0, 3, 7);
-    print_array(split, 8);
+    // int split[] = {2,4,6,8,1,3,5,7};
+    // merge(split, 0, 3, 7);
+    // print_array(split, 8);
+
+    merge_sort(random_array, 0, arr_size);
+
+    print_array(random_array, arr_size);
+
 
     // Test threads
     int nthreads, tid;
