@@ -27,14 +27,14 @@ void generate_random_array(vector<unsigned int> &list, unsigned int length) {
 
 void insertion_sort(vector<unsigned int> &v, unsigned int l, unsigned int r) {
     unsigned int i, key, j;
-    for (i = l+1; i < r+1; i++) {
+    for (i = 1; i < r-l; i++) {
+        j = i;
         key = v[i];
-        j = i - 1;
-        while (j >= 0 && v[j] > key) {
-            v[j + 1] = v[j];
-            j = j - 1;
+        while (v[j] != NULL && j > 0 && v[j-1] > key) {
+            v[j] = v[j-1];
+            j--;
         }
-        v[j + 1] = key;
+        v[j] = key;
     }
 }
 
@@ -95,15 +95,14 @@ void merge_sort_parallel(vector<unsigned int> &v, unsigned int l, unsigned int r
             unsigned int m = l + ((r-l) / 2);
             #pragma omp taskgroup 
             {
-                #pragma omp task shared(v) untied if(r-l >= (1<<14)) //firstprivate (array, l, r) //shared(array)// 
+                #pragma omp task shared(v) untied if(r-l >= (1<<10)) //firstprivate (array, l, r) //shared(array)// 
                 merge_sort_parallel(v, l, m);
-                #pragma omp task shared(v) untied if(r-l >= (1<<14)) //firstprivate (array, l, r) //shared(array)//
+                #pragma omp task shared(v) untied if(r-l >= (1<<10)) //firstprivate (array, l, r) //shared(array)//
                 merge_sort_parallel(v, m + 1, r);
                 #pragma omp taskyield
             }
             #pragma omp taskwait
             merge(v, l, m, r);
-            // #pragma omp taskwait
         } else {
             insertion_sort(v, l, r + 1);
         }
@@ -113,7 +112,7 @@ void merge_sort_parallel(vector<unsigned int> &v, unsigned int l, unsigned int r
 }
 
 void merge_sort_parallel_wrapper(vector<unsigned int> &v, unsigned int l, unsigned int r) {
-    #pragma omp parallel num_threads(100)
+    #pragma omp parallel num_threads(128)
     {
         #pragma omp single
         merge_sort_parallel(v, l, r);
@@ -122,15 +121,20 @@ void merge_sort_parallel_wrapper(vector<unsigned int> &v, unsigned int l, unsign
 
 int main() {
     // Generate random array for sorting
-    unsigned int num_elements = 1000000;
+    // unsigned int num_elements = 1048576;
+    unsigned int num_elements = 16384;
+
+    // vector<unsigned int> random_v0 = vector<unsigned int>(num_elements);
     vector<unsigned int> random_v1 = vector<unsigned int>(num_elements);
     vector<unsigned int> random_v2 = vector<unsigned int>(num_elements);
 
+    // generate_random_array(random_v0, num_elements);
     generate_random_array(random_v1, num_elements);
     generate_random_array(random_v2, num_elements);
 
-    auto v_size = random_v1.size();
-
+    // auto v_size = random_v0.size();
+    // auto v_size = random_v1.size();
+    auto v_size = random_v2.size();
 
     // print_array(random_array, arr_size);
 
@@ -139,29 +143,32 @@ int main() {
     // merge(split, 0, 3, 7);
     // print_array(split, 8);
 
-    // insertion_sort(random_array, 0, arr_size);
-
-    //merge_sort_serial(random_array, 0, arr_size);
+    // auto start0 = high_resolution_clock::now();
+    // insertion_sort(random_v0, 0, v_size);
+    // auto stop0 = high_resolution_clock::now();
+    // auto insertion_time = duration_cast<microseconds>(stop0 - start0);
 
     auto start1 = high_resolution_clock::now();
     merge_sort_serial(random_v1, 0, v_size);
     auto stop1 = high_resolution_clock::now();
-
-    auto duration1 = duration_cast<microseconds>(stop1 - start1);
+    auto serial_time = duration_cast<microseconds>(stop1 - start1);
 
     auto start2 = high_resolution_clock::now();
     merge_sort_parallel_wrapper(random_v2, 0, v_size);
     auto stop2 = high_resolution_clock::now();
-
-    auto duration2 = duration_cast<microseconds>(stop2 - start2);
+    auto parallel_time = duration_cast<microseconds>(stop2 - start2);
 
     // print_array(random_array1, arr_size);
     // print_array(random_array2, arr_size);
-
+    // cout << "Time taken by insertion sort: "
+    //      << insertion_time.count() << " microseconds" << endl;
     cout << "Time taken by serial sort: "
-         << duration1.count() << " microseconds" << endl;
+         << serial_time.count() << " microseconds" << endl;
     cout << "Time taken by parallel sort: "
-         << duration2.count() << " microseconds" << endl;
+         << parallel_time.count() << " microseconds" << endl;
     cout <<"Overall speedup: "
-         << (float)duration1.count() / (float)duration2.count() << "x" << endl;
+         << (float)serial_time.count() / (float)parallel_time.count() << "x" << endl;
+    // print_array(random_v2, v_size);
+    cout << is_sorted(random_v2.begin(), random_v2.end()) << endl;
+    return 0;
 }

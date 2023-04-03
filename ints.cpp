@@ -9,7 +9,7 @@
 using namespace std;
 using namespace std::chrono;
 
-void print_array(int array[], int length) {
+void print_array(int *array, int length) {
     printf("[");
     for(int i = 0;i<length;i++) {
         i < length-1 ? printf("%d, ", array[i]) : printf("%d", array[i]);
@@ -17,8 +17,8 @@ void print_array(int array[], int length) {
     printf("]\n");
 }
 
-void generate_random_array(int list[], int length) {
-    int i;
+void generate_random_array(int *list, int length) {
+    unsigned int i;
     srand((unsigned int)time(NULL));
     for(i = 0; i < length; i++) {
         list[i] = rand() % (length*2);
@@ -26,20 +26,20 @@ void generate_random_array(int list[], int length) {
 }
 
 void insertion_sort(int array[], int l, int r) {
-    int i, key, j;
-    for (i = l+1; i < r+1; i++) {
+    unsigned int i, key, j;
+    for (i = 1; i < r-l+1; i++) {
+        j = i;
         key = array[i];
-        j = i - 1;
-        while (j >= 0 && array[j] > key) {
-            array[j + 1] = array[j];
-            j = j - 1;
+        while (array[j] != NULL && j > 0 && array[j-1] > key) {
+            array[j] = array[j-1];
+            j--;
         }
-        array[j + 1] = key;
+        array[j] = key;
     }
 }
 
 // Merges two subarrays of array[] -> array[l..m] and array[m+1..r]
-void merge( int array[], int l, int m, int r) {
+void merge(int array[], int l, int m, int r) {
     int length = r - l + 1;
     int a = l;
     int b = m+1;
@@ -113,7 +113,7 @@ void merge_sort_parallel( int array[], int l, int r) {
 }
 
 void merge_sort_parallel_wrapper( int arr[], int l, int r) {
-    #pragma omp parallel num_threads(100)
+    #pragma omp parallel num_threads(128)
     {
         #pragma omp single
         merge_sort_parallel(arr, l, r);
@@ -123,13 +123,15 @@ void merge_sort_parallel_wrapper( int arr[], int l, int r) {
 int main() {
     // Generate random array for sorting
     int num_elements = 100000;
-    int random_array1[num_elements];
-    int random_array2[num_elements];
+
+    int *random_array1 = new int[num_elements];
+    int *random_array2 = new int[num_elements];
 
     generate_random_array(random_array1, num_elements);
     generate_random_array(random_array2, num_elements);
 
-    auto arr_size = sizeof(random_array1) / sizeof(random_array1[0]);
+    // auto arr_size = sizeof(random_array1) / sizeof(random_array1[0]);
+    auto arr_size = num_elements;
 
     // print short_array(random_array, arr_size);
 
@@ -163,4 +165,9 @@ int main() {
          << duration2.count() << " microseconds" << endl;
     cout <<"Overall speedup: "
          << (float)duration1.count() / (float)duration2.count() << "x" << endl;
+    // print_array(random_array1, arr_size);
+    // print_array(random_array2, arr_size);
+    cout << is_sorted(random_array1, random_array1 + arr_size - 1);
+    cout << is_sorted(random_array2, random_array2 + arr_size - 1);
+
 }
