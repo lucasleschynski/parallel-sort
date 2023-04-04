@@ -96,9 +96,9 @@ void merge_sort_parallel( int array[], int l, int r) {
             int m = l + ((r-l) / 2);
             #pragma omp taskgroup 
             {
-                #pragma omp task shared(array) untied if(r-l >= (1<<14)) //firstprivate (array, l, r) //shared(array)// 
+                #pragma omp task shared(array) untied if(r-l >= (1<<10))
                 merge_sort_parallel(array, l, m);
-                #pragma omp task shared(array) untied if(r-l >= (1<<14)) //firstprivate (array, l, r) //shared(array)//
+                #pragma omp task shared(array) untied if(r-l >= (1<<10))
                 merge_sort_parallel(array, m + 1, r);
                 #pragma omp taskyield
             }

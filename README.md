@@ -55,6 +55,8 @@ After getting the parallelism working properly, I started testing different thin
 
 Firstly, I realized that using the standard `signed int` does **not** work well for implementing an efficient merge sort. Here is why I think this is:
 
-In each recursive call of the merge sort function, we calculate the middle index of the array by taking the left and right subarray indices and finding the midpoint (`m = l + ((r-l) / 2)`). This requires standard integer division. The standard int
+In each recursive call of the merge sort function, we calculate the middle index of the array by taking the left and right subarray indices and finding the midpoint (`m = l + ((r-l) / 2)`). This requires standard integer division **by 2**.
+
+Because the standard `int` is signed, it has an MSB of 1, whereas the `unsigned int` has no important MSB. Because of this, the `unsigned int` can perform division by powers of 2 much more easily (which is what we need), as a simple right shift can be used to do so. The overhead from doing the more complex division need for a signed `int` adds up quickly and slows the algorithm down a lot.
 
 ###

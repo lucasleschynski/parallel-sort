@@ -95,6 +95,8 @@ void merge_sort_parallel(vector<unsigned int> &v, unsigned int l, unsigned int r
             unsigned int m = l + ((r-l) / 2);
             #pragma omp taskgroup 
             {
+                // m = l + ((r-l) / 2);
+                // #pragma omp taskwait
                 #pragma omp task shared(v) untied if(r-l >= (1<<10)) //firstprivate (array, l, r) //shared(array)// 
                 merge_sort_parallel(v, l, m);
                 #pragma omp task shared(v) untied if(r-l >= (1<<10)) //firstprivate (array, l, r) //shared(array)//
@@ -121,8 +123,8 @@ void merge_sort_parallel_wrapper(vector<unsigned int> &v, unsigned int l, unsign
 
 int main() {
     // Generate random array for sorting
-    // unsigned int num_elements = 1048576;
-    unsigned int num_elements = 16384;
+    // unsigned int num_elements = 1000000;
+    unsigned int num_elements = 32768;
 
     // vector<unsigned int> random_v0 = vector<unsigned int>(num_elements);
     vector<unsigned int> random_v1 = vector<unsigned int>(num_elements);
