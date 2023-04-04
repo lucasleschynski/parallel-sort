@@ -11,7 +11,7 @@ using namespace std::chrono;
 
 void print_array(int *array, int length) {
     printf("[");
-    for(int i = 0;i<length;i++) {
+    for(int i = 0;i<100;i++) {
         i < length-1 ? printf("%d, ", array[i]) : printf("%d", array[i]);
     }
     printf("]\n");
@@ -96,9 +96,9 @@ void merge_sort_parallel( int array[], int l, int r) {
             int m = l + ((r-l) / 2);
             #pragma omp taskgroup 
             {
-                #pragma omp task shared(array) untied if(r-l >= (1<<10))
+                #pragma omp task shared(array) if(r-l >= (1<<10))
                 merge_sort_parallel(array, l, m);
-                #pragma omp task shared(array) untied if(r-l >= (1<<10))
+                #pragma omp task shared(array) if(r-l >= (1<<10))
                 merge_sort_parallel(array, m + 1, r);
                 #pragma omp taskyield
             }
@@ -122,7 +122,7 @@ void merge_sort_parallel_wrapper( int arr[], int l, int r) {
 
 int main() {
     // Generate random array for sorting
-    int num_elements = 100000;
+    int num_elements = 32768;
 
     int *random_array1 = new int[num_elements];
     int *random_array2 = new int[num_elements];
@@ -130,19 +130,7 @@ int main() {
     generate_random_array(random_array1, num_elements);
     generate_random_array(random_array2, num_elements);
 
-    // auto arr_size = sizeof(random_array1) / sizeof(random_array1[0]);
     auto arr_size = num_elements;
-
-    // print short_array(random_array, arr_size);
-
-    // int split[] = {1,3,5,7,2,4,6,8};
-    // int split[] = {2,4,6,8,1,3,5,7};
-    // merge(split, 0, 3, 7);
-    // print short_array(split, 8);
-
-    // insertion_sort(random_array, 0, arr_size);
-
-    //merge_sort_serial(random_array, 0, arr_size);
 
     auto start1 = high_resolution_clock::now();
     merge_sort_serial(random_array1, 0, arr_size);
@@ -156,18 +144,14 @@ int main() {
 
     auto duration2 = duration_cast<microseconds>(stop2 - start2);
 
-    // print short_array(random_array1, arr_size);
-    // print short_array(random_array2, arr_size);
-
     cout << "Time taken by serial sort: "
          << duration1.count() << " microseconds" << endl;
     cout << "Time taken by parallel sort: "
          << duration2.count() << " microseconds" << endl;
     cout <<"Overall speedup: "
          << (float)duration1.count() / (float)duration2.count() << "x" << endl;
-    // print_array(random_array1, arr_size);
-    // print_array(random_array2, arr_size);
-    cout << is_sorted(random_array1, random_array1 + arr_size - 1);
+    print_array(random_array2, arr_size);
     cout << is_sorted(random_array2, random_array2 + arr_size - 1);
-
+    delete[] random_array1;
+    delete[] random_array2;
 }

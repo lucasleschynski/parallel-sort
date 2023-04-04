@@ -109,9 +109,9 @@ void merge_sort_parallel(int array[], unsigned int l, unsigned int r) {
             unsigned int m = l + ((r-l) / 2);
             #pragma omp taskgroup 
             {
-                #pragma omp task shared(array) if(r-l >= (1<<10)) //firstprivate (array, l, r) //shared(array)// 
+                #pragma omp task shared(array) if(r-l >= (1<<10))
                 merge_sort_parallel(array, l, m);
-                #pragma omp task shared(array) if(r-l >= (1<<10)) //firstprivate (array, l, r) //shared(array)//
+                #pragma omp task shared(array) if(r-l >= (1<<10))
                 merge_sort_parallel(array, m + 1, r);
                 #pragma omp taskyield
             }
@@ -145,19 +145,7 @@ int main() {
     generate_random_array(random_array1, num_elements);
     generate_random_array(random_array2, num_elements);
 
-    // auto arr_size = sizeof(random_array1) / sizeof(random_array1[0]);
     auto arr_size = num_elements;
-
-    // print_array(random_array1, arr_size);
-
-    // int split[] = {1,3,5,7,2,4,6,8};
-    // int split[] = {2,4,6,8,1,3,5,7};
-    // merge(split, 0, 3, 7);
-    // print short_array(split, 8);
-
-    // insertion_sort(random_array, 0, arr_size);
-
-    //merge_sort_serial(random_array, 0, arr_size);
 
     auto start1 = high_resolution_clock::now();
     merge_sort_serial(random_array1, 0, arr_size);
@@ -169,17 +157,14 @@ int main() {
     auto stop2 = high_resolution_clock::now();
     auto duration2 = duration_cast<microseconds>(stop2 - start2);
 
-    // print short_array(random_array1, arr_size);
-    // print_array(random_array1, arr_size);
-
     cout << "Time taken by serial sort: "
          << duration1.count() << " microseconds" << endl;
     cout << "Time taken by parallel sort: "
          << duration2.count() << " microseconds" << endl;
     cout <<"Overall speedup: "
          << (float)duration1.count() / (float)duration2.count() << "x" << endl;
-    cout << is_sorted(random_array1, random_array1 + arr_size - 1);
-
-    // delete[] random_array1;
-    // delete[] random_array2;
+    cout << is_sorted(random_array2, random_array2 + arr_size);
+    // print_array(random_array2, arr_size);
+    delete[] random_array1;
+    delete[] random_array2;
 }

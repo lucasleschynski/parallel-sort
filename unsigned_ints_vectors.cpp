@@ -95,11 +95,9 @@ void merge_sort_parallel(vector<unsigned int> &v, unsigned int l, unsigned int r
             unsigned int m = l + ((r-l) / 2);
             #pragma omp taskgroup 
             {
-                // m = l + ((r-l) / 2);
-                // #pragma omp taskwait
-                #pragma omp task shared(v) untied if(r-l >= (1<<10)) //firstprivate (array, l, r) //shared(array)// 
+                #pragma omp task shared(v) if(r-l >= (1<<10))
                 merge_sort_parallel(v, l, m);
-                #pragma omp task shared(v) untied if(r-l >= (1<<10)) //firstprivate (array, l, r) //shared(array)//
+                #pragma omp task shared(v) if(r-l >= (1<<10))
                 merge_sort_parallel(v, m + 1, r);
                 #pragma omp taskyield
             }
@@ -134,21 +132,7 @@ int main() {
     generate_random_array(random_v1, num_elements);
     generate_random_array(random_v2, num_elements);
 
-    // auto v_size = random_v0.size();
-    // auto v_size = random_v1.size();
     auto v_size = random_v2.size();
-
-    // print_array(random_array, arr_size);
-
-    // int split[] = {1,3,5,7,2,4,6,8};
-    // int split[] = {2,4,6,8,1,3,5,7};
-    // merge(split, 0, 3, 7);
-    // print_array(split, 8);
-
-    // auto start0 = high_resolution_clock::now();
-    // insertion_sort(random_v0, 0, v_size);
-    // auto stop0 = high_resolution_clock::now();
-    // auto insertion_time = duration_cast<microseconds>(stop0 - start0);
 
     auto start1 = high_resolution_clock::now();
     merge_sort_serial(random_v1, 0, v_size);
@@ -160,10 +144,6 @@ int main() {
     auto stop2 = high_resolution_clock::now();
     auto parallel_time = duration_cast<microseconds>(stop2 - start2);
 
-    // print_array(random_array1, arr_size);
-    // print_array(random_array2, arr_size);
-    // cout << "Time taken by insertion sort: "
-    //      << insertion_time.count() << " microseconds" << endl;
     cout << "Time taken by serial sort: "
          << serial_time.count() << " microseconds" << endl;
     cout << "Time taken by parallel sort: "
