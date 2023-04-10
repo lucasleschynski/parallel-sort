@@ -122,7 +122,7 @@ void merge_sort_parallel_wrapper( int arr[], int l, int r) {
 
 int main() {
     // Generate random array for sorting
-    int num_elements = 32768;
+    int num_elements = 1048576;
 
     int *random_array1 = new int[num_elements];
     int *random_array2 = new int[num_elements];
@@ -150,8 +150,6 @@ int main() {
          << duration2.count() << " microseconds" << endl;
     cout <<"Overall speedup: "
          << (float)duration1.count() / (float)duration2.count() << "x" << endl;
-    print_array(random_array2, arr_size);
-    cout << is_sorted(random_array2, random_array2 + arr_size - 1);
     delete[] random_array1;
     delete[] random_array2;
 }

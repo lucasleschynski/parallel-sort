@@ -121,14 +121,11 @@ void merge_sort_parallel_wrapper(vector<unsigned int> &v, unsigned int l, unsign
 
 int main() {
     // Generate random array for sorting
-    // unsigned int num_elements = 1000000;
-    unsigned int num_elements = 32768;
+    unsigned int num_elements = 1048576;
 
-    // vector<unsigned int> random_v0 = vector<unsigned int>(num_elements);
     vector<unsigned int> random_v1 = vector<unsigned int>(num_elements);
     vector<unsigned int> random_v2 = vector<unsigned int>(num_elements);
 
-    // generate_random_array(random_v0, num_elements);
     generate_random_array(random_v1, num_elements);
     generate_random_array(random_v2, num_elements);
 
@@ -150,7 +147,5 @@ int main() {
          << parallel_time.count() << " microseconds" << endl;
     cout <<"Overall speedup: "
          << (float)serial_time.count() / (float)parallel_time.count() << "x" << endl;
-    // print_array(random_v2, v_size);
-    cout << is_sorted(random_v2.begin(), random_v2.end()) << endl;
     return 0;
 }
