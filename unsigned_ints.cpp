@@ -17,7 +17,7 @@ void print_array(int *array, unsigned int length) {
     printf("]\n");
 }
 
-void generate_random_array(int *list, unsigned int length) {
+void generate_random_array(unsigned int *list, unsigned int length) {
     unsigned int i;
     srand((unsigned int)time(NULL));
     for(i = 0; i < length; i++) {
@@ -25,61 +25,41 @@ void generate_random_array(int *list, unsigned int length) {
     }
 }
 
-void insertion_sort(int array[], unsigned int l, unsigned int r) {
+void insertion_sort(unsigned int array[], int l, int r) {
     unsigned int i, key, j;
     for (i = 1; i < r-l+1; i++) {
         j = i;
-        key = array[i];
-        while (array[j] != NULL && j > 0 && array[j-1] > key) {
+        while (array[j] != NULL && j > 0 && array[j-1] > array[i]) {
             array[j] = array[j-1];
             j--;
         }
-        array[j] = key;
+        array[j] = array[i];
     }
 }
 
-// void insertion_sort(int arr[], unsigned int l, unsigned int r) {
-//     int i, key, j;
-//     for (i = 1; i < r-l+1; i++) {
-//         key = arr[i];
-//         j = i - 1;
-//         while (j >= 0 && arr[j] > key) {
-//             arr[j + 1] = arr[j];
-//             j = j - 1;
-//         }
-//         arr[j + 1] = key;
-//     }
-// }
-
 // Merges two subarrays of array[] -> array[l..m] and array[m+1..r]
-void merge(int array[], unsigned int l, unsigned int m, unsigned int r) {
+void merge(unsigned int array[], unsigned int l, unsigned int m, unsigned int r) {
     unsigned int length = r - l + 1;
     unsigned int a = l;
     unsigned int b = m+1;
     unsigned int *fullcopy = new unsigned int[length];
     unsigned int i = 0;
+
     while(a <= m && b <= r) {
         if(array[a] < array[b]) {
-            fullcopy[i] = array[a];
-            a++;
+            fullcopy[i++] = array[a++];
         } else {
-            fullcopy[i] = array[b];
-            b++;
+            fullcopy[i++] = array[b++];
         }
-        i++;
     }
     bool left_merged = a > m ? true : false;
     if(left_merged) {
         while(b <= r) {
-            fullcopy[i] = array[b];
-            b++;
-            i++;
+            fullcopy[i++] = array[b++];
         }
     } else {
         while(a <= m) {
-            fullcopy[i] = array[a];
-            a++;
-            i++;
+            fullcopy[i++] = array[a++];
         }
     }
     for(int i = 0; i < length; i++) {
@@ -88,22 +68,22 @@ void merge(int array[], unsigned int l, unsigned int m, unsigned int r) {
     delete[] fullcopy;
 }
 
-void merge_sort_serial(int array[], unsigned int l, unsigned int r) {
+void merge_sort_serial(unsigned int array[], unsigned int l, unsigned int r) {
     if(l < r) {
-        //if(l-r >= 43) {
+        if(l-r >= 43) {
             unsigned int m = l + ((r-l) / 2);
             merge_sort_serial(array, l, m);
             merge_sort_serial(array, m + 1, r);
             merge(array, l, m, r);
-        // } else {
-        //     insertion_sort(array, l, r + 1);
-        // }
+        } else {
+            insertion_sort(array, l, r + 1);
+        }
     } else {
         return;
     }
 }
 
-void merge_sort_parallel(int array[], unsigned int l, unsigned int r) {
+void merge_sort_parallel(unsigned int array[], unsigned int l, unsigned int r) {
     if(l < r) {
         if(l-r >= 43) {
             unsigned int m = l + ((r-l) / 2);
@@ -125,7 +105,7 @@ void merge_sort_parallel(int array[], unsigned int l, unsigned int r) {
     }
 }
 
-void merge_sort_parallel_wrapper(int arr[], unsigned int l, unsigned int r) {
+void merge_sort_parallel_wrapper(unsigned int arr[], unsigned int l, unsigned int r) {
     #pragma omp parallel num_threads(128)
     {
         #pragma omp single
@@ -135,10 +115,11 @@ void merge_sort_parallel_wrapper(int arr[], unsigned int l, unsigned int r) {
 
 int main() {
     // Generate random array for sorting
-    unsigned int num_elements = 1048576;
+    // unsigned int num_elements = 1048576;
+    unsigned int num_elements = 33554432;
 
-    int *random_array1 = new int[num_elements];
-    int *random_array2 = new int[num_elements];
+    unsigned int *random_array1 = new unsigned int[num_elements];
+    unsigned int *random_array2 = new unsigned int[num_elements];
 
     generate_random_array(random_array1, num_elements);
     generate_random_array(random_array2, num_elements);
@@ -154,13 +135,15 @@ int main() {
     merge_sort_parallel_wrapper(random_array2, 0, arr_size);
     auto stop2 = high_resolution_clock::now();
     auto duration2 = duration_cast<microseconds>(stop2 - start2);
-
+    
+    cout << "Benchmark (unsigned int[])" << endl;
     cout << "Time taken by serial sort: "
          << duration1.count() << " microseconds" << endl;
     cout << "Time taken by parallel sort: "
          << duration2.count() << " microseconds" << endl;
     cout <<"Overall speedup: "
          << (float)duration1.count() / (float)duration2.count() << "x" << endl;
+
     delete[] random_array1;
     delete[] random_array2;
 }

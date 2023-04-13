@@ -29,49 +29,43 @@ void insertion_sort(vector<unsigned int> &v, unsigned int l, unsigned int r) {
     unsigned int i, key, j;
     for (i = 1; i < r-l; i++) {
         j = i;
-        key = v[i];
-        while (v[j] != NULL && j > 0 && v[j-1] > key) {
+        // key = v[i];
+        while (v[j] != NULL && j > 0 && v[j-1] > v[i]) {
             v[j] = v[j-1];
             j--;
         }
-        v[j] = key;
+        v[j] = v[i];
     }
 }
 
-// Merges two subarrays of array[] -> array[l..m] and array[m+1..r]
 void merge(vector<unsigned int> &v, unsigned int l, unsigned int m, unsigned int r) {
     unsigned int length = r - l + 1;
     unsigned int a = l;
     unsigned int b = m+1;
-    vector<unsigned int> fullcopy = vector<unsigned int>(length);
+    unsigned int *fullcopy = new unsigned int[length];
     unsigned int i = 0;
+
     while(a <= m && b <= r) {
         if(v[a] < v[b]) {
-            fullcopy[i] = v[a];
-            a++;
+            fullcopy[i++] = v[a++];
         } else {
-            fullcopy[i] = v[b];
-            b++;
+            fullcopy[i++] = v[b++];
         }
-        i++;
     }
     bool left_merged = a > m ? true : false;
     if(left_merged) {
         while(b <= r) {
-            fullcopy[i] = v[b];
-            b++;
-            i++;
+            fullcopy[i++] = v[b++];
         }
     } else {
         while(a <= m) {
-            fullcopy[i] = v[a];
-            a++;
-            i++;
+            fullcopy[i++] = v[a++];
         }
     }
     for(int i = 0; i < length; i++) {
         v[l+i] = fullcopy[i];
     }
+    delete[] fullcopy;
 }
 
 void merge_sort_serial(vector<unsigned int> &v, unsigned int l, unsigned int r) {
@@ -121,7 +115,8 @@ void merge_sort_parallel_wrapper(vector<unsigned int> &v, unsigned int l, unsign
 
 int main() {
     // Generate random array for sorting
-    unsigned int num_elements = 1048576;
+    // unsigned int num_elements = 1048576;
+    unsigned int num_elements = 33554432;
 
     vector<unsigned int> random_v1 = vector<unsigned int>(num_elements);
     vector<unsigned int> random_v2 = vector<unsigned int>(num_elements);
@@ -141,6 +136,7 @@ int main() {
     auto stop2 = high_resolution_clock::now();
     auto parallel_time = duration_cast<microseconds>(stop2 - start2);
 
+    cout << "Benchmark (vector<unsigned int>)" << endl;
     cout << "Time taken by serial sort: "
          << serial_time.count() << " microseconds" << endl;
     cout << "Time taken by parallel sort: "

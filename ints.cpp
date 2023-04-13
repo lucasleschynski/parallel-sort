@@ -11,7 +11,7 @@ using namespace std::chrono;
 
 void print_array(int *array, int length) {
     printf("[");
-    for(int i = 0;i<100;i++) {
+    for(int i = 0;i<length;i++) {
         i < length-1 ? printf("%d, ", array[i]) : printf("%d", array[i]);
     }
     printf("]\n");
@@ -26,15 +26,14 @@ void generate_random_array(int *list, int length) {
 }
 
 void insertion_sort(int array[], int l, int r) {
-    unsigned int i, key, j;
+    unsigned int i, j;
     for (i = 1; i < r-l+1; i++) {
         j = i;
-        key = array[i];
-        while (array[j] != NULL && j > 0 && array[j-1] > key) {
+        while (array[j] != NULL && j > 0 && array[j-1] > array[i]) {
             array[j] = array[j-1];
             j--;
         }
-        array[j] = key;
+        array[j] = array[i];
     }
 }
 
@@ -47,26 +46,19 @@ void merge(int array[], int l, int m, int r) {
     int i = 0;
     while(a <= m && b <= r) {
         if(array[a] < array[b]) {
-            fullcopy[i] = array[a];
-            a++;
+            fullcopy[i++] = array[a++];
         } else {
-            fullcopy[i] = array[b];
-            b++;
+            fullcopy[i++] = array[b++];
         }
-        i++;
     }
     bool left_merged = a > m ? true : false;
     if(left_merged) {
         while(b <= r) {
-            fullcopy[i] = array[b];
-            b++;
-            i++;
+            fullcopy[i++] = array[b++];
         }
     } else {
         while(a <= m) {
-            fullcopy[i] = array[a];
-            a++;
-            i++;
+            fullcopy[i++] = array[a++];
         }
     }
     for(int i = 0; i < length; i++) {
@@ -96,9 +88,9 @@ void merge_sort_parallel( int array[], int l, int r) {
             int m = l + ((r-l) / 2);
             #pragma omp taskgroup 
             {
-                #pragma omp task shared(array) if(r-l >= (1<<10))
+                #pragma omp task shared(array) if(r-l >= (1<<14))
                 merge_sort_parallel(array, l, m);
-                #pragma omp task shared(array) if(r-l >= (1<<10))
+                #pragma omp task shared(array) if(r-l >= (1<<14))
                 merge_sort_parallel(array, m + 1, r);
                 #pragma omp taskyield
             }
@@ -122,13 +114,20 @@ void merge_sort_parallel_wrapper( int arr[], int l, int r) {
 
 int main() {
     // Generate random array for sorting
-    int num_elements = 1048576;
+    int num_elements = 33554432;
+    // int num_elements = 32768;
+
+    // int num_elements = 1235;
 
     int *random_array1 = new int[num_elements];
     int *random_array2 = new int[num_elements];
+    int *random_array3 = new int[num_elements];
+
 
     generate_random_array(random_array1, num_elements);
     generate_random_array(random_array2, num_elements);
+    generate_random_array(random_array3, num_elements);
+
 
     auto arr_size = num_elements;
 
@@ -144,12 +143,15 @@ int main() {
 
     auto duration2 = duration_cast<microseconds>(stop2 - start2);
 
+
+    cout << "Benchmark (int[])" << endl;
     cout << "Time taken by serial sort: "
          << duration1.count() << " microseconds" << endl;
     cout << "Time taken by parallel sort: "
          << duration2.count() << " microseconds" << endl;
     cout <<"Overall speedup: "
          << (float)duration1.count() / (float)duration2.count() << "x" << endl;
+    // print_array(random_array1, num_elements);
     delete[] random_array1;
     delete[] random_array2;
 }
