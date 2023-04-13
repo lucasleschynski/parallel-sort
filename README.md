@@ -63,16 +63,22 @@ Because the standard `int` is signed, it has an MSB of 1, whereas the `unsigned 
 
 ### Benchmarks
 
-Here are the benchmarks for sorting an array with $2^25$ elements:
+Here are the benchmarks for sorting an array with $2^{25}$ elements:
 
 For standard `int[]`:
-![Int](https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/int.png?raw=true)
+
+<!-- ![Int](https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/int.png?raw=true) -->
+<img src="https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/int.png?raw=true" height="80" />
 
 For `unsigned int[]`:
-![Int](https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/unsigned.png?raw=true)
+
+<!-- ![Int](https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/unsigned.png?raw=true) -->
+<img src="https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/unsigned.png?raw=true" height="80" />
 
 For `vector<unsigned int>`:
-![Int](https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/vector.png?raw=true)
+
+<!-- ![Int](https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/vector.png?raw=true) -->
+<img src="https://github.com/lucasleschynski/parallel-sort/blob/main/benchmarks/vector.png?raw=true" height="80" />
 
 As can be seen, the standard `int[]` implementation is the fastest overall (by far). Both the serial and parallel versions are 10x faster than the parallel `unsigned int[]` version.
 
