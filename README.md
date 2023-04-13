@@ -10,7 +10,7 @@ Prior to doing this, I had some experience in C, but not C++. Obviously, C++ is 
 
 Note: This project was done on an M1 Pro chip, so results may vary on other platforms.
 
-## The "What" and "How"
+## The Process
 
 This section describes the iterations the code has gone through with details on what prompted each iteration and the things learned at each step.
 
@@ -18,9 +18,9 @@ This section describes the iterations the code has gone through with details on 
 
 Prior to doing any coding, I did a fair bit of research on parallelism online. Once I felt that I had a good understanding of it, I decided to try my hand at implementing it.
 
-### Sequential merge sort
+<!-- ### Sequential merge sort
 
-First, I wrote the regular sequential version of merge sort. This served as a bit of a warmup and refresher on C-style programming.
+First, I wrote the regular sequential version of merge sort. This served as a bit of a warmup and refresher on C-style programming. -->
 
 ### Implementing parallelism
 
