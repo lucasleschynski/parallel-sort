@@ -8,7 +8,7 @@ I have recently been learning about high-performance computing and have develope
 
 Prior to doing this, I had some experience in C, but not C++. Obviously, C++ is very applicable to these things, so I have also used this project as an exercise to learn the basics of C++.
 
-Note: This project was done on an M1 Pro chip, so results may vary on other platforms.
+Note: This project was done on an M1 Pro chip using g++ 12.2.0, so results may vary on other platforms.
 
 ## The Process
 
