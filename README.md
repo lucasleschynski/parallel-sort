@@ -2,8 +2,6 @@
 
 Exploring parallelism for mergesort with OpenMP
 
-## Motivations
-
 Note: This project was done on an M1 Pro chip using g++ 12.2.0, so results may vary on other platforms.
 
 ## The Process
